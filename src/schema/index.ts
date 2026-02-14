@@ -1,2 +1,2 @@
-// This file was named schema and had schema shit... renamed index.ts
+// Barrel file re-exporting all schema definitions
 export * from './app';
