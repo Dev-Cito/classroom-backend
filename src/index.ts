@@ -1,18 +1,57 @@
-import express, { Request, Response } from "express";
+import { eq } from 'drizzle-orm';
+import { index, pool } from './db';
+import { departments } from './schema';
 
-const app = express();
-const PORT = 8080;
+async function main() {
+  try {
+    console.log('Performing CRUD operations...');
 
-// Middleware
-app.use(express.json());
+    // CREATE: Insert a new department
+    const [newDepartment] = await index
+      .insert(departments)
+      .values({ code: 'CS', name: 'Computer Science', description: 'Main CS department' })
+      .returning();
 
-// Routes
-app.get("/", (_req: Request, res: Response) => {
-  res.send("Classroom backend API is running!🚀");
-});
+    if (!newDepartment) {
+      throw new Error('Failed to create department');
+    }
 
-// Start server
-app.listen(PORT, () => {
-  const url = `http://localhost:${PORT}`;
-  console.log(`Server is running at ${url}`);
-});
+    console.log('✅ CREATE: New department created:', newDepartment);
+
+    // READ: Select the user
+    const foundDepartment = await index
+      .select()
+      .from(departments)
+      .where(eq(departments.id, newDepartment.id));
+    console.log('✅ READ: Found department:', foundDepartment[0]);
+
+    // UPDATE: Change the user's name
+    const [updatedDepartment] = await index
+      .update(departments)
+      .set({ name: 'Computer Science & Engineering' })
+      .where(eq(departments.id, newDepartment.id))
+      .returning();
+
+    if (!updatedDepartment) {
+      throw new Error('Failed to update department');
+    }
+
+    console.log('✅ UPDATE: Department updated:', updatedDepartment);
+
+    // DELETE: Remove the user
+    await index.delete(departments).where(eq(departments.id, newDepartment.id));
+    console.log('✅ DELETE: Department deleted.');
+
+    console.log('\nCRUD operations completed successfully.');
+  } catch (error) {
+    console.error('❌ Error performing CRUD operations:', error);
+    process.exit(1);
+  } finally {
+    if (pool) {
+      await pool.end();
+      console.log('Database pool closed.');
+    }
+  }
+}
+
+main();
