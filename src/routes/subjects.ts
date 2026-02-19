@@ -30,7 +30,8 @@ router.get('/', async (req,  res) => {
 
     //if department filter exists, match department name
         if (department) {
-            filterConditions.push(ilike(departments.name, `%${department}%`));
+            const deptPattern= `%${String(department).replace(/[%_]/g, '\\$&')}%`;
+            filterConditions.push(ilike(departments.name, deptPattern));
         }
 
     //combine all filters using AND if any exist
@@ -47,8 +48,8 @@ router.get('/', async (req,  res) => {
         const subjectsList = await db
             .select({...getTableColumns(subjects), department: {...getTableColumns(departments)}
             }).from(subjects).leftJoin(departments, eq(subjects.departmentId, departments.id))
-            .where(whereClause).
-            orderBy(desc(subjects.createdAt))
+            .where(whereClause)
+            .orderBy(desc(subjects.createdAt))
             .limit(limitPerPage)
             .offset(offset);
 
