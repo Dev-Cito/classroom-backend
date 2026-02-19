@@ -1,57 +1,18 @@
-import { eq } from 'drizzle-orm';
-import { db, pool } from './db';
-import { departments } from './schema';
+import express from "express";
+import subjectsRouter from "./routes/subjects";
 
-async function main() {
-  try {
-    console.log('Performing CRUD operations...');
+const app = express();
 
-    // CREATE: Insert a new department
-    const [newDepartment] = await db
-      .insert(departments)
-      .values({ code: 'CS', name: 'Computer Science', description: 'Main CS department' })
-      .returning();
+const PORT = 8080;
 
-    if (!newDepartment) {
-      throw new Error('Failed to create department');
-    }
+app.use(express.json());
 
-    console.log('✅ CREATE: New department created:', newDepartment);
+app.use("/api/subjects", subjectsRouter)
 
-    // READ: Select the user
-    const foundDepartment = await db
-      .select()
-      .from(departments)
-      .where(eq(departments.id, newDepartment.id));
-    console.log('✅ READ: Found department:', foundDepartment[0]);
+app.get("/", (req, res) => {
+  res.send("Welcome to the classroom API!");
+});
 
-    // UPDATE: Change the user's name
-    const [updatedDepartment] = await db
-      .update(departments)
-      .set({ name: 'Computer Science & Engineering' })
-      .where(eq(departments.id, newDepartment.id))
-      .returning();
-
-    if (!updatedDepartment) {
-      throw new Error('Failed to update department');
-    }
-
-    console.log('✅ UPDATE: Department updated:', updatedDepartment);
-
-    // DELETE: Remove the user
-    await db.delete(departments).where(eq(departments.id, newDepartment.id));
-    console.log('✅ DELETE: Department deleted.');
-
-    console.log('\nCRUD operations completed successfully.');
-  } catch (error) {
-    console.error('❌ Error performing CRUD operations:', error);
-    process.exit(1);
-  } finally {
-    if (pool) {
-      await pool.end();
-      console.log('Database pool closed.');
-    }
-  }
-}
-
-main();
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+})
