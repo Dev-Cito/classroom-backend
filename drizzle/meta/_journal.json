@@ -15,6 +15,48 @@
       "when": 1772489234312,
       "tag": "0001_shocking_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773224782751,
+      "tag": "0002_complex_reavers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773225450735,
+      "tag": "0003_medical_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773225744119,
+      "tag": "0004_third_apocalypse",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1773226390294,
+      "tag": "0005_spooky_captain_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773226571931,
+      "tag": "0006_loose_silver_centurion",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773227070822,
+      "tag": "0007_nappy_thunderball",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,2 @@
+ALTER TABLE "user" ALTER COLUMN "email_verified" SET DATA TYPE boolean USING (email_verified::text::boolean);--> statement-breakpoint
+ALTER TABLE "user" ALTER COLUMN "email_verified" SET DEFAULT false;
