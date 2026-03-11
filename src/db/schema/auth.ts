@@ -9,11 +9,15 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "string" }).defaultNow()
+  createdAt: timestamp("created_at", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+  updatedAt: timestamp("updated_at", { mode: "string" })
+      .defaultNow()
       .$onUpdate(() => new Date().toISOString())
       .notNull(),
-  role: roleEnum("role").default("student").notNull(),
+  role: roleEnum("role").default("student")
+      .notNull(),
   imageCldPubId: text("image_cld_pub_id"),
 });
 
@@ -54,6 +58,7 @@ export const account = pgTable(
       password: text("password"),
       createdAt: timestamp("created_at", { mode: "string" }).defaultNow().notNull(),
       updatedAt: timestamp("updated_at", { mode: "string" })
+          .defaultNow()
           .$onUpdate(() => new Date().toISOString())
           .notNull(),
     },
