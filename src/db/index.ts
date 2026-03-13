@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { Pool } from '@neondatabase/serverless';
-import * as schema from './schema';
+import * as schema from './schema/index.js';
 
 
 if (!process.env.DATABASE_URL) {
