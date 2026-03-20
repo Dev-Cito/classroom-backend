@@ -13,18 +13,28 @@ import auth from "./lib/auth.js";
 const app = express();
 const PORT = 8080;
 
-if(!process.env.FRONTEND_URL) throw new Error("FRONTEND_URL is not set in .env file");
 
-// ✅ Must be FIRST — before cors, security, everything
+const allowedOrigins = [
+  'https://classroom-frontend-plum.vercel.app',
+  'https://classroom-frontend-git-main-dev-citos-projects.vercel.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.status(204).end();
 });
-
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
-}))
 
 app.all('/api/auth/*splat', toNodeHandler(auth));
 app.use('/api/auth', securityMiddleware);
