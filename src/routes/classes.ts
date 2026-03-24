@@ -120,8 +120,7 @@ router.post('/', async (req, res) => {
             return;
         }
 
-        const newClass = result[0];
-
+        const newClass = result[0] as typeof result[0];
         res.status(201).json({
             ...newClass,
             inviteCode: newClass.inviteCode.toUpperCase(),
