@@ -4,11 +4,12 @@ AgentAPI.config()
 import express from "express";
 import subjectsRouter from "./routes/subjects.js";
 import usersRouter from "./routes/users.js";
-import classesRouter from "./routes/classes.js";
 import cors from "cors";
 import securityMiddleware from "./middleware/security.js";
 import {toNodeHandler} from "better-auth/node";
 import auth from "./lib/auth.js";
+import classesRouter from "./routes/classes.js";
+
 
 const app = express();
 const PORT = 8080;
@@ -18,6 +19,7 @@ const allowedOrigins = [
   'https://classroom-frontend-plum.vercel.app',
   'https://classroom-frontend-git-main-dev-citos-projects.vercel.app',
   process.env.FRONTEND_URL,
+  'http://localhost:5173',
 ].filter(Boolean) as string[];
 
 app.use(cors({
@@ -28,7 +30,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
@@ -45,6 +47,7 @@ app.use(securityMiddleware);
 app.use("/api/subjects", subjectsRouter)
 app.use("/api/users", usersRouter)
 app.use("/api/classes", classesRouter)
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to the classroom API!");
