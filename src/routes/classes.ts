@@ -9,16 +9,21 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const { search, subject, teacher, page = 1, limit = 10 } = req.query;
+        const { subject, teacher, status, page = 1, limit = 10 } = req.query;
 
         const currentPage = Math.max(1, +page);
         const limitPerPage = Math.max(1, +limit);
         const offset = (currentPage - 1) * limitPerPage;
 
-        const filterConditions = [];
+        const filterConditions: any[] = [];
 
-        if (search) {
-            const searchPattern = `%${String(search).replace(/[%_]/g, '\\$&')}%`;
+        // Correct search handling
+        const searchQuery: string | undefined =
+            req.query.search as string | undefined ||
+            req.query["filters[0][value]"] as string | undefined;
+
+        if (searchQuery) {
+            const searchPattern = `%${String(searchQuery).replace(/[%_]/g, '\\$&')}%`;
             filterConditions.push(
                 or(
                     ilike(classes.name, searchPattern),
@@ -33,6 +38,10 @@ router.get('/', async (req, res) => {
 
         if (teacher) {
             filterConditions.push(ilike(user.name, `%${teacher}%`));
+        }
+
+        if (status) {
+            filterConditions.push(eq(classes.status, status as string));
         }
 
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
@@ -78,7 +87,6 @@ router.get('/', async (req, res) => {
         res.status(500).json('Failed to get classes');
     }
 });
-
 router.post('/', async (req, res) => {
     try {
         const {
