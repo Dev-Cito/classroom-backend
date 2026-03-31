@@ -19,36 +19,29 @@ const allowedOrigins = [
   'https://classroom-frontend-git-main-dev-citos-projects.vercel.app',
   process.env.FRONTEND_URL,
   'http://localhost:5173',
-].filter(Boolean) as string[];
+].filter(Boolean);
 
-// CORS options: explicitly allow common preflight-triggering headers and methods
-const corsOptions = {
-  origin: (origin: any, callback: any) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+app.use(cors({
+  origin: (origin, callback) => {
+    console.log("Incoming origin:", origin);
+
+    if (!origin) return callback(null, true);
+
+    if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+    ) {
       return callback(null, true);
     }
 
-    // in development allow any origin to ease local testing
-    if (process.env.NODE_ENV !== 'production') {
-      console.warn(`[CORS] Non-matching origin in dev, allowing: ${origin}`);
-      return callback(null, true);
-    }
-
-    console.warn(`[CORS] Rejected origin: ${origin}. Allowed origins: ${allowedOrigins.join(', ')}`);
-    // do not throw an Error here; respond with CORS failure
+    console.warn(`[CORS] Blocked: ${origin}`);
     return callback(null, false);
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  // explicitly allow headers that commonly trigger preflight
   allowedHeaders: ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
   credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-};
-
-// apply CORS for all routes (must be before route handlers)
-app.use(cors(corsOptions));
-
+  optionsSuccessStatus: 204,
+}));
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -64,13 +57,11 @@ app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.status(204).end();
 });
 
+app.use(securityMiddleware);
 
 app.use("/api/subjects", subjectsRouter)
 app.use("/api/users", usersRouter)
 app.use("/api/classes", classesRouter)
-
-app.use(securityMiddleware);
-
 
 app.get("/", (req, res) => {
   res.send("Welcome to the classroom API!");
