@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
         }
 
         if (status) {
-            filterConditions.push(eq(classes.status, status as string));
+            filterConditions.push(eq(classes.status, status as "active" | "inactive" | "archived"));
         }
 
         const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
