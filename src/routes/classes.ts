@@ -33,11 +33,11 @@ router.get('/', async (req, res) => {
         }
 
         if (subject) {
-            filterConditions.push(eq(classes.subjectId, +subject));
+            filterConditions.push(ilike(subjects.name, `%${subject}%`));
         }
 
         if (teacher) {
-            filterConditions.push(eq(classes.teacherId, teacher as string));
+            filterConditions.push(ilike(user.name, `%${teacher}%`));
         }
 
         if (status) {
