@@ -12,7 +12,8 @@ import classesRouter from "./routes/classes.js";
 
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = Number(process.env.PORT) || 8080;
+
 
 const allowedOrigins = [
   'https://classroom-frontend-plum.vercel.app',
@@ -20,6 +21,14 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   'http://localhost:5173',
 ].filter(Boolean);
+
+
+app.use((req, res, next) => {
+  console.log('RAW origin header:', JSON.stringify(req.headers.origin));
+  console.log('RAW host:', req.headers.host);
+  next();
+});
+
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -35,7 +44,7 @@ app.use(cors({
     }
 
     console.warn(`[CORS] Blocked: ${origin}`);
-    return callback(null, false);
+    return callback(new Error(`[CORS] Blocked origin: ${origin}`));
   },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "Accept", "X-Requested-With"],
